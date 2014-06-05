@@ -1,10 +1,12 @@
 node python-build-server {
     include init
     include windows_git
-    include jenkins
-    jenkins::plugin {
-        "git" : ;
-        "github" : ;
+    class 'buildserver::jenkins' {
+        include jenkins
+        jenkins::plugin {
+            "git" : ;
+            "github" : ;
+        }
     }
     include jenkins_job_builder
     include nasm
