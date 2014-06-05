@@ -1,5 +1,4 @@
 node python-build-server {
-    include init
     include windows_git
     class 'buildserver::jenkins' {
         include jenkins
@@ -10,7 +9,18 @@ node python-build-server {
     }
     include jenkins_job_builder
     include nasm
-    include mingw # this needs to include gendef and pthreads!
+    class 'buildserver::mingw' {
+        include mingw
+        $mgw_path_base = 'C:\MinGW'
+        exec {'install-gendef':
+            command   => "set \"mingw=${mgw_path_base}\" ; ${mgw_get_path}\\bin\\mingw-get.exe install mingw32-gendef",
+            provider  => powershell,
+        }
+        exec {'install-pthreads':
+            command   => "set \"mingw=${mgw_path_base}\" ; ${mgw_get_path}\\bin\\mingw-get.exe install mingw32-pthreads-w32",
+            provider  => powershell,
+        }
+    }
     include wdk
     include dotnet35
     include visualcplusplus2008
