@@ -1,19 +1,25 @@
-class buildserver {
-    include windows_git
-    class 'buildserver::jenkins' {
-        include jenkins
-        jenkins::plugin {
-            "git" : ;
-            "github" : ;
-        }
+class swig (
+    $version     = $swig::params::version,
+    $url         = $swig::params::url,
+    $package     = $swig::params:package,
+    $swigpath    = $swig::params::swigpath,
+) inherits swig::params {
+    windows_common::remote_file{"swigwin":
+        source      => "${url}",
+        destination => "${swigpath}\\${package}-${version}.zip",
+        before      => Windows_7zip::Extract_file['swigwin'],
+        require     => File["${$swigpath}"],
     }
-    include jenkins_job_builder
-    include nasm
-    include mingw
-    include wdk
-    include dotnet35
-    include visualcplusplus2008
-    include platformsdk
-    include swig
-    include mysql
+    
+    windows_7zip::extract_file{'swigwin':
+        file        => "${swigpath}\\${package}-${version}.zip",
+        destination => $swigpath,
+        before      => windows_path['swigwin'],
+        subscribe   => Windows_common::Remote_file["swigwin"],
+    }
+    
+    windows_path { $swigpath:
+        ensure      => present,
+        require     Windows_7zip::Extract_file['swigwin'],
+    }
 }
