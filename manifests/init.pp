@@ -1,25 +1,29 @@
 class swig (
     $version     = $swig::params::version,
     $url         = $swig::params::url,
-    $package     = $swig::params:package,
+    $package     = $swig::params::package,
     $swigpath    = $swig::params::swigpath,
 ) inherits swig::params {
     windows_common::remote_file{"swigwin":
         source      => "${url}",
-        destination => "${swigpath}\\${package}-${version}.zip",
+        destination => "${swigpath}/${package}-${version}.zip",
         before      => Windows_7zip::Extract_file['swigwin'],
-        require     => File["${$swigpath}"],
+        require     => File["${swigpath}"],
+    }
+    
+    file { "${swigpath}":
+      ensure => directory,
     }
     
     windows_7zip::extract_file{'swigwin':
-        file        => "${swigpath}\\${package}-${version}.zip",
+        file        => "${swigpath}/${package}-${version}.zip",
         destination => $swigpath,
-        before      => windows_path['swigwin'],
+        before      => windows_path["$swigpath"],
         subscribe   => Windows_common::Remote_file["swigwin"],
     }
     
     windows_path { $swigpath:
         ensure      => present,
-        require     Windows_7zip::Extract_file['swigwin'],
+        require     => Windows_7zip::Extract_file['swigwin'],
     }
 }
