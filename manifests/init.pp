@@ -1,7 +1,7 @@
 class swig (
     $version     = $swig::params::version,
     $url         = $swig::params::url,
-    $package     = $swig::params:package,
+    $package     = $swig::params::package,
     $swigpath    = $swig::params::swigpath,
 ) inherits swig::params {
     windows_common::remote_file{"swigwin":
