@@ -20,6 +20,6 @@ class swig (
     
     windows_path { $swigpath:
         ensure      => present,
-        require     Windows_7zip::Extract_file['swigwin'],
+        require     => Windows_7zip::Extract_file['swigwin'],
     }
 }
